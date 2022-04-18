@@ -1,3 +1,4 @@
+const { dir } = require('console');
 const fs = require('fs');
 function sleep(ms) {
   return  new Promise(resolve => setTimeout(resolve, ms));
@@ -9,7 +10,8 @@ document.getElementById('loadbtn').addEventListener('click', () => {
         sleep(3000);
         let file=fileinput.files[0];
         if(file!=null&&file!=undefined){
-        let response = sendReq('http://localhost:3000/file','POST',file);
+        
+        let response = sendReq('http://localhost:3000/file','POST',file.path);
         alert(response);
         if(checkres(response)){
             window.location.replace('DataBase.html');
@@ -22,13 +24,15 @@ document.getElementById('loadbtn').addEventListener('click', () => {
     
 });
 document.getElementById('createbtn').addEventListener('click', () => {
-        let dirinput = document.getElementById('fileinput');
+        let dirinput = document.getElementById('directoryinput');
     dirinput.click();
     dirinput.addEventListener('change', () => {
         sleep(3000);
         let file=dirinput.files[0];
-        let directory = String(file.path).substring(0,String(file.path).lastIndexOf('\\'));
         if(file!==null&&file!==undefined){
+            let directory = file.path;
+            
+        console.log(directory);
         let response = sendReq('http://localhost:3000/new','POST',directory);
         alert(response);
         if(checkres(response)){
@@ -46,14 +50,16 @@ function sendReq(url,method,data){
     let response="";
     try{
             let req = new XMLHttpRequest();
-            req.open(`${method}`, `${url}`, false);
+            req.open(method, url, false);
             req.onload = function () {
                 // This is called even on 404 etc
                 // so check the status
                 if (req.status == 200) {
                     // Resolve the promise with the response text
-                    console.log(req.responseText);
-                    response=req.responseText;
+                    while(req.response.length==0){
+                    }
+                    console.log(req.response);
+                    response=req.response;
                 }
                 else {
                     // Otherwise reject with the status text
@@ -62,7 +68,8 @@ function sendReq(url,method,data){
                 }
             };   
             if(method=='POST'){
-                req.send(`${data}`);
+                req.setRequestHeader('Content-Type', 'text/plain');
+                req.send(data);
             }
             else{
                 req.send();

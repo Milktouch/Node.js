@@ -1,11 +1,12 @@
 var database;
-var orginaldb ;
+var originaldb ;
+var issaved=true;
 function init(){
-    database=sendReq('/get','GET');
-    originaldb=sendReq('/get','GET');
+    database=JSON.parse(sendReq('http://localhost:3000/get','GET'));
+    originaldb=JSON.parse(sendReq('http://localhost:3000/get','GET'));
     updatetable();
 }
-
+init();
 
 const fs = require('fs');
 var h,w;
@@ -128,6 +129,17 @@ document.getElementById('database-body').addEventListener('mouseout',(event)=>{
     });
 });
 //Start: Action button listeners and executors
+document.getElementById('back').addEventListener('click',(event)=>{
+    if(!issaved){
+        let answer = confirm('You have unsaved changes. Are you sure you want to go back?');
+        if(answer){
+            window.location.replace('index.html');
+        }
+    }
+    else{
+    window.location.replace('index.html');
+    }
+});
 document.querySelectorAll('#action-menu>button').forEach((element)=>{element.addEventListener('click',()=>{
     var action = element.textContent;
     if(action=='Add Row'){
@@ -235,6 +247,7 @@ function updatedbfromtable(){
         updatetable();
 }
 function updatejson(key,index,info){
+    issaved=false;
     if (!Object.keys(database).includes(key)){
         if(key===null||key===undefined||key==='') {
             let index=1;
@@ -287,9 +300,11 @@ function removeRow(index){
     for(let key in database){
         database[key].splice(index,1);
     }
+    issaved=false;
 }
 function RemoveColumn(index){
     delete database[Object.keys(database)[index]];
+    issaved=false;
 }
 function AddColumn(){
     let table = document.getElementById('database-body');
@@ -302,6 +317,7 @@ function AddColumn(){
         for(let i =1;i<length;i++){
             database[`key${keys}`].push({value:`value${i}`,type:'type'});
         }
+        issaved=false;
 }
 function AddRow(){
         let table = document.getElementById('database-body');
@@ -310,12 +326,19 @@ function AddRow(){
             database[key].push({value:`value${length}`,type:'Text'});
             
         }
+        issaved=false;
 }
 function Save(){
     orginaldb={};
     orginaldb=database;
     let json = JSON.stringify(database);
-    sendReq('/save','POST',json);
+    let res=sendReq('http://localhost:3000/save','POST',json);
+    if(checkres(res)){
+        issaved=true;
+    }
+    else{
+        alert('Error: Could not save');      
+    }
 }
 function sendReq(url,method,data){
     let response="";
