@@ -5,6 +5,7 @@ function init(){
     database=JSON.parse(sendReq('http://localhost:3000/get','GET'));
     originaldb=JSON.parse(sendReq('http://localhost:3000/get','GET'));
     updatetable();
+    console.table(database);
 }
 init();
 
@@ -342,6 +343,7 @@ function Save(){
 }
 function sendReq(url,method,data){
     let response="";
+    console.log("sending request to: "+url+"\n with method: "+method+" \n with data: "+data)
     try{
             let req = new XMLHttpRequest();
             req.open(`${method}`, `${url}`, false);

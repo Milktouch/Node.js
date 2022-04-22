@@ -10,6 +10,7 @@ body {
     text-align: center;
     align-items: center;
     align-content: center;
+    user-select: none;
 }
 /*Start: title style*/
 #title {

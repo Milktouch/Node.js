@@ -40,7 +40,7 @@ document.getElementById('createbtn').addEventListener('click', () => {
         }
         }
         else{
-            alert("No file selected");
+            alert("Error");
         }
     });
         
@@ -48,6 +48,7 @@ document.getElementById('createbtn').addEventListener('click', () => {
 
 function sendReq(url,method,data){
     let response="";
+    console.log("sending request to: "+url+"\n with method: "+method+" \n with data: "+data)
     try{
             let req = new XMLHttpRequest();
             req.open(method, url, false);
@@ -68,6 +69,7 @@ function sendReq(url,method,data){
                 }
             };   
             if(method=='POST'){
+                
                 req.setRequestHeader('Content-Type', 'text/plain');
                 req.send(data);
             }
